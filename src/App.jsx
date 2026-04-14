@@ -166,6 +166,23 @@ export default function App() {
             >
               <Search size={40} class="text-white" strokeWidth={2.5} />
             </button>
+            {/* Tombol Kembali ke Halaman Utama */}
+            {/* Tombol Kembali ke Menu Utama - Posisinya di bawah tengah */}
+            <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 animate-slide-up">
+              <button
+                onClick={goWelcome}
+                class="flex items-center gap-3 px-8 py-4 bg-amber-600/20 backdrop-blur-2xl hover:bg-amber-600 rounded-full border border-white/20 shadow-[0_0_40px_rgba(251,191,36,0.3)] transition-all active:scale-95 group"
+              >
+                <X
+                  size={20}
+                  class="text-white group-hover:rotate-90 transition-transform duration-300"
+                  strokeWidth={3}
+                />
+                <span class="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-white whitespace-nowrap">
+                  Kembali ke Menu Utama
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </Show>
@@ -202,7 +219,8 @@ export default function App() {
             />
             <div class="modal-box relative w-full max-w-2xl bg-[#1c1c1e]/80 border border-white/20 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden backdrop-blur-3xl">
               <div class="flex items-center p-8 gap-5 border-b border-white/10">
-                <Search class="text-purple-500" size={32} />
+                {/* ICON SEARCH: Sekarang warna emas */}
+                <Search class="text-amber-400" size={32} />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -227,14 +245,16 @@ export default function App() {
                           setSelectedImg(p);
                           setShowSearchModal(false);
                         }}
-                        class="flex items-center gap-5 p-4 rounded-2xl hover:bg-purple-600/30 border border-transparent hover:border-purple-500/50 transition-all cursor-pointer group"
+                        class="flex items-center gap-5 p-4 rounded-2xl hover:bg-amber-900/30 border border-transparent hover:border-amber-500/50 transition-all cursor-pointer group"
                       >
                         <img
                           src={p.url}
-                          class="w-16 h-16 rounded-full object-cover border-2 border-white/10 group-hover:border-purple-400"
+                          class="w-16 h-16 rounded-full object-cover border-2 border-white/10 group-hover:border-amber-400"
                         />
                         <div>
-                          <p class="text-xl font-bold uppercase">{p.name}</p>
+                          <p class="text-xl font-bold uppercase text-white">
+                            {p.name}
+                          </p>
                           <p class="text-xs text-zinc-500 font-bold uppercase">
                             {p.category}
                           </p>
@@ -278,22 +298,22 @@ export default function App() {
         <Show when={selectedImg()}>
           <div
             onClick={() => setSelectedImg(null)}
-            class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-10"
+            class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-0"
           >
-            {/* Paksa container ambil lebar maksimal tanpa ampun */}
+            {/* Container utama tanpa padding biar foto pol gedenya */}
             <div class="img-container relative w-screen h-screen flex flex-col items-center justify-center p-2">
               <img
                 src={selectedImg().url}
-                /* h-full dan max-h-[95vh] biar foto bener-bener raksasa */
-                class="w-auto h-full max-h-[92vh] object-contain rounded-lg shadow-[0_0_100px_rgba(168,85,247,0.4)] border border-white/10"
+                /* Aksen shadow diganti jadi amber (emas) */
+                class="w-auto h-full max-h-[92vh] object-contain rounded-lg shadow-[0_0_100px_rgba(251,191,36,0.3)] border border-white/10"
               />
 
-              {/* Container teks dikecilin pol supaya gak makan jatah foto */}
+              {/* Teks category diganti jadi text-amber-400 (emas) */}
               <div class="mt-2 text-center bg-black/50 backdrop-blur-md p-3 px-8 rounded-full border border-white/10 shadow-2xl">
                 <h3 class="text-2xl md:text-4xl font-black tracking-tighter uppercase leading-none text-white">
                   {selectedImg().name}
                 </h3>
-                <p class="text-purple-400 font-black tracking-[0.2em] uppercase text-[10px] mt-1">
+                <p class="text-amber-400 font-black tracking-[0.2em] uppercase text-[10px] mt-1">
                   {selectedImg().category}
                 </p>
               </div>
