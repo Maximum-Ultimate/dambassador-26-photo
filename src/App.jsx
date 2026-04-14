@@ -7,7 +7,7 @@ import {
   createMemo,
 } from "solid-js";
 import { Transition } from "solid-transition-group";
-import { Search, X, MousePointerClick } from "lucide-solid";
+import { Search, X, MousePointerClick, HomeIcon } from "lucide-solid";
 
 // Import data foto yang sudah diproses di photos.js
 import { GALA_PHOTOS } from "./photos";
@@ -173,7 +173,12 @@ export default function App() {
                 onClick={goWelcome}
                 class="flex items-center gap-3 px-8 py-4 bg-amber-600/20 backdrop-blur-2xl hover:bg-amber-600 rounded-full border border-white/20 shadow-[0_0_40px_rgba(251,191,36,0.3)] transition-all active:scale-95 group"
               >
-                <X
+                {/* <X
+                  size={20}
+                  class="text-white group-hover:rotate-90 transition-transform duration-300"
+                  strokeWidth={3}
+                /> */}
+                <HomeIcon
                   size={20}
                   class="text-white group-hover:rotate-90 transition-transform duration-300"
                   strokeWidth={3}
