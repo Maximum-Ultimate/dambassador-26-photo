@@ -12,6 +12,13 @@ import { Search, X, MousePointerClick } from "lucide-solid";
 // Import data foto yang sudah diproses di photos.js
 import { GALA_PHOTOS } from "./photos";
 
+// Assets
+import bgHome from "./assets/img-design/bgHome.webp";
+import bgGallery from "./assets/img-design/bgGallery.webp";
+import homeTitle from "./assets/img-design/homeTitle.webp";
+import homeTitle2 from "./assets/img-design/homeTitle2.webp";
+import galleryTitle from "./assets/img-design/galleryTitle.webp";
+
 export default function App() {
   const [step, setStep] = createSignal(1);
   const [search, setSearch] = createSignal("");
@@ -88,16 +95,18 @@ export default function App() {
         <Show when={step() === 1}>
           <div
             onClick={() => setStep(2)}
-            class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900 via-black to-black"
+            class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer bg-black overflow-hidden"
           >
-            <div class="animate-slide-up flex flex-col items-center">
-              <div class="p-10 bg-white/5 rounded-full border border-white/10 backdrop-blur-3xl animate-bounce mb-8 shadow-[0_0_50px_rgba(168,85,247,0.2)]">
-                <MousePointerClick size={80} class="text-purple-400" />
-              </div>
-              <h1 class="text-8xl font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-600">
-                GALA MOMENTS
-              </h1>
-              <p class="mt-6 text-zinc-500 tracking-[0.5em] uppercase text-sm">
+            {/* Background Image dengan Overlay */}
+            <div class="absolute inset-0 z-0">
+              <img src={bgHome} class="w-full h-full object-cover" />
+            </div>
+
+            {/* Content */}
+            <img class="absolute top-20" src={homeTitle2} alt="" />
+            <div class="relative z-10 animate-slide-up flex flex-col items-center">
+              <img src={homeTitle} class="w-[1000px] max-w-[90vw] mb-4" />
+              <p class="mt-6 text-yellow-500 tracking-[0.5em] uppercase text-xl animate-pulse">
                 Sentuh Layar untuk Memulai
               </p>
             </div>
@@ -107,50 +116,57 @@ export default function App() {
 
       {/* --- 2. GALLERY VIEW --- */}
       <Show when={step() === 2}>
-        <div class="h-full flex flex-col p-8 pt-20">
-          <header class="mb-12 text-center animate-slide-up">
-            <h2 class="text-6xl font-black tracking-tighter text-white/90 uppercase">
-              Event Gallery
-            </h2>
-            <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
-          </header>
-
-          <div class="flex-1 overflow-y-auto custom-scrollbar pb-40 px-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-              <For each={filteredPhotos()}>
-                {(photo, i) => (
-                  <div
-                    onClick={() => setSelectedImg(photo)}
-                    style={{ "animation-delay": `${i() * 0.03}s` }}
-                    class="animate-slide-up group relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-900 shadow-2xl transition-all hover:border-purple-500/50 hover:shadow-purple-500/20 active:scale-95 cursor-pointer"
-                  >
-                    <img
-                      src={photo.url}
-                      loading="lazy"
-                      class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
-                    />
-                    {/* Floating Info Glass Card */}
-                    <div class="absolute inset-x-3 bottom-3 p-5 rounded-[1.5rem] bg-black/40 backdrop-blur-xl border border-white/10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
-                      <p class="font-bold text-xl uppercase leading-tight truncate">
-                        {photo.name}
-                      </p>
-                      <p class="text-[10px] text-purple-400 font-black uppercase tracking-widest mt-1.5">
-                        {photo.category}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </For>
-            </div>
+        <div class="relative h-full w-full flex flex-col overflow-hidden bg-black">
+          {/* Background Image Layer */}
+          <div class="absolute inset-0 z-0">
+            <img src={bgGallery} class="w-full h-full object-cover" />
+            {/* <div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" /> */}
           </div>
 
-          {/* Floating Action Button */}
-          <button
-            onClick={toggleSearch}
-            class="fixed bottom-1/2 left-5 md:left-7 md:translate-x-0 w-24 h-24 bg-yellow-600/20 backdrop-blur-2xl hover:bg-yellow-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(168,85,247,0.4)] border border-white/20 transition-all active:scale-90 z-40 animate-slide-up"
-          >
-            <Search size={40} class="text-white" strokeWidth={2.5} />
-          </button>
+          {/* Content Layer */}
+          <div class="relative z-10 h-full flex flex-col p-8 pt-10">
+            <header class="mb-12 text-center animate-slide-up">
+              <img src={galleryTitle} alt="" />
+              {/* <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]" /> */}
+            </header>
+
+            {/* Kita pendekin pb-72 jadi pb-20 dan tambahin max-h-screen biar gak bablas ke bawah */}
+            <div class="flex-1 overflow-y-auto custom-scrollbar pb-20 px-4 max-h-[80vh]">
+              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+                <For each={filteredPhotos()}>
+                  {(photo, i) => (
+                    <div
+                      onClick={() => setSelectedImg(photo)}
+                      style={{ "animation-delay": `${i() * 0.03}s` }}
+                      class="animate-slide-up group relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-900/50 backdrop-blur-sm shadow-2xl transition-all hover:border-purple-500/50 hover:shadow-purple-500/20 active:scale-95 cursor-pointer"
+                    >
+                      <img
+                        src={photo.url}
+                        loading="lazy"
+                        class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000 ease-out"
+                      />
+                      <div class="absolute inset-x-3 bottom-3 p-5 rounded-[1.5rem] bg-black/40 backdrop-blur-xl border border-white/10 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
+                        <p class="font-bold text-xl uppercase leading-tight truncate">
+                          {photo.name}
+                        </p>
+                        <p class="text-[10px] text-purple-400 font-black uppercase tracking-widest mt-1.5">
+                          {photo.category}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </div>
+
+            {/* Floating Action Button */}
+            <button
+              onClick={toggleSearch}
+              class="fixed bottom-1/2 left-5 md:left-7 md:translate-x-0 w-24 h-24 bg-yellow-600/20 backdrop-blur-2xl hover:bg-yellow-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(234,179,8,0.4)] border border-white/20 transition-all active:scale-90 z-40 animate-slide-up"
+            >
+              <Search size={40} class="text-white" strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
       </Show>
 
@@ -269,7 +285,7 @@ export default function App() {
               <img
                 src={selectedImg().url}
                 /* h-full dan max-h-[95vh] biar foto bener-bener raksasa */
-                class="w-auto h-full max-h-[92vh] object-contain rounded-2xl shadow-[0_0_100px_rgba(168,85,247,0.4)] border border-white/10"
+                class="w-auto h-full max-h-[92vh] object-contain rounded-lg shadow-[0_0_100px_rgba(168,85,247,0.4)] border border-white/10"
               />
 
               {/* Container teks dikecilin pol supaya gak makan jatah foto */}
