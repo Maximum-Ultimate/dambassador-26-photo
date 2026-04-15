@@ -9,15 +9,19 @@ import {
 import { Transition } from "solid-transition-group";
 import { Search, X, MousePointerClick, HomeIcon } from "lucide-solid";
 
-// Import data foto yang sudah diproses di photos.js
-import { GALA_PHOTOS } from "./photos";
-
-// Assets
+// Import Assets
 import bgHome from "./assets/img-design/bgHome.webp";
 import bgGallery from "./assets/img-design/bgGallery.webp";
 import homeTitle from "./assets/img-design/homeTitle.webp";
 import homeTitle2 from "./assets/img-design/homeTitle2.webp";
 import galleryTitle from "./assets/img-design/galleryTitle.webp";
+
+// Import Audio
+import bgmMain from "./assets/sound/bgmMain.mp3";
+import sfxClick from "./assets/sound/sfx.wav";
+
+// Import Data
+import { GALA_PHOTOS } from "./photos";
 
 export default function App() {
   const [step, setStep] = createSignal(1);
@@ -27,27 +31,57 @@ export default function App() {
 
   let searchInputRef;
   let timer;
+  let bgmRef;
+  let sfxRef;
 
-  // Timer auto-reset ke Welcome Screen jika tidak ada aktivitas
-  const resetTimer = () => {
-    clearTimeout(timer);
-    if (step() === 2) {
-      timer = setTimeout(() => goWelcome(), 20000); // 20 detik idle
+  // Fungsi Putar SFX
+  const playSfx = () => {
+    if (sfxRef) {
+      sfxRef.currentTime = 0; // Reset ke awal biar bisa spam klik
+      sfxRef.play();
     }
   };
 
+  const resetTimer = () => {
+    clearTimeout(timer);
+    if (step() === 2) {
+      timer = setTimeout(() => goWelcome(), 60000);
+    }
+  };
+
+  const startApp = () => {
+    playSfx();
+    setStep(2);
+    if (bgmRef)
+      bgmRef
+        .play()
+        .catch(() => console.log("User interaction needed for audio"));
+  };
+
   const goWelcome = () => {
-    setStep(1);
-    setSearch("");
-    setSelectedImg(null);
-    setShowSearchModal(false);
+    playSfx();
+    setTimeout(() => {
+      setStep(1);
+      setSearch("");
+      setSelectedImg(null);
+      setShowSearchModal(false);
+    }, 400);
   };
 
   const toggleSearch = () => {
+    playSfx();
     setShowSearchModal(!showSearchModal());
     if (showSearchModal()) {
       setTimeout(() => searchInputRef?.focus(), 300);
     }
+  };
+
+  const handleSelectImg = (img) => {
+    playSfx();
+    setSelectedImg(img);
+    setTimeout(() => {
+      setSearch("");
+    }, 300);
   };
 
   const filteredPhotos = createMemo(() => {
@@ -75,6 +109,10 @@ export default function App() {
 
   return (
     <div class="relative w-screen h-screen bg-[#050505] text-white overflow-hidden font-sans select-none">
+      {/* Audio Elements */}
+      <audio ref={bgmRef} src={bgmMain} loop />
+      <audio ref={sfxRef} src={sfxClick} />
+
       {/* --- 1. WELCOME SCREEN --- */}
       <Transition
         onEnter={(el, done) => {
@@ -94,15 +132,12 @@ export default function App() {
       >
         <Show when={step() === 1}>
           <div
-            onClick={() => setStep(2)}
+            onClick={startApp}
             class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer bg-black overflow-hidden"
           >
-            {/* Background Image dengan Overlay */}
             <div class="absolute inset-0 z-0">
               <img src={bgHome} class="w-full h-full object-cover" />
             </div>
-
-            {/* Content */}
             <img class="absolute top-20" src={homeTitle2} alt="" />
             <div class="relative z-10 animate-slide-up flex flex-col items-center">
               <img src={homeTitle} class="w-[1000px] max-w-[90vw] mb-4" />
@@ -117,26 +152,21 @@ export default function App() {
       {/* --- 2. GALLERY VIEW --- */}
       <Show when={step() === 2}>
         <div class="relative h-full w-full flex flex-col overflow-hidden bg-black">
-          {/* Background Image Layer */}
           <div class="absolute inset-0 z-0">
             <img src={bgGallery} class="w-full h-full object-cover" />
-            {/* <div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" /> */}
           </div>
 
-          {/* Content Layer */}
           <div class="relative z-10 h-full flex flex-col p-8 pt-10">
             <header class="mb-12 text-center animate-slide-up">
               <img src={galleryTitle} alt="" />
-              {/* <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]" /> */}
             </header>
 
-            {/* Kita pendekin pb-72 jadi pb-20 dan tambahin max-h-screen biar gak bablas ke bawah */}
             <div class="flex-1 overflow-y-auto custom-scrollbar pb-20 px-4 max-h-[80vh]">
               <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
                 <For each={filteredPhotos()}>
                   {(photo, i) => (
                     <div
-                      onClick={() => setSelectedImg(photo)}
+                      onClick={() => handleSelectImg(photo)}
                       style={{ "animation-delay": `${i() * 0.03}s` }}
                       class="animate-slide-up group relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 bg-zinc-900/50 backdrop-blur-sm shadow-2xl transition-all hover:border-purple-500/50 hover:shadow-purple-500/20 active:scale-95 cursor-pointer"
                     >
@@ -159,25 +189,19 @@ export default function App() {
               </div>
             </div>
 
-            {/* Floating Action Button */}
+            {/* Floating Action Buttons */}
             <button
               onClick={toggleSearch}
               class="fixed bottom-1/2 left-5 md:left-7 md:translate-x-0 w-24 h-24 bg-yellow-600/20 backdrop-blur-2xl hover:bg-yellow-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(234,179,8,0.4)] border border-white/20 transition-all active:scale-90 z-40 animate-slide-up"
             >
               <Search size={40} class="text-white" strokeWidth={2.5} />
             </button>
-            {/* Tombol Kembali ke Halaman Utama */}
-            {/* Tombol Kembali ke Menu Utama - Posisinya di bawah tengah */}
+
             <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 animate-slide-up">
               <button
                 onClick={goWelcome}
                 class="flex items-center gap-3 px-8 py-4 bg-amber-600/20 backdrop-blur-2xl hover:bg-amber-600 rounded-full border border-white/20 shadow-[0_0_40px_rgba(251,191,36,0.3)] transition-all active:scale-95 group"
               >
-                {/* <X
-                  size={20}
-                  class="text-white group-hover:rotate-90 transition-transform duration-300"
-                  strokeWidth={3}
-                /> */}
                 <HomeIcon
                   size={20}
                   class="text-white group-hover:rotate-90 transition-transform duration-300"
@@ -224,7 +248,6 @@ export default function App() {
             />
             <div class="modal-box relative w-full max-w-2xl bg-[#1c1c1e]/80 border border-white/20 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden backdrop-blur-3xl">
               <div class="flex items-center p-8 gap-5 border-b border-white/10">
-                {/* ICON SEARCH: Sekarang warna emas */}
                 <Search class="text-amber-400" size={32} />
                 <input
                   ref={searchInputRef}
@@ -247,7 +270,7 @@ export default function App() {
                     {(p) => (
                       <div
                         onClick={() => {
-                          setSelectedImg(p);
+                          handleSelectImg(p);
                           setShowSearchModal(false);
                         }}
                         class="flex items-center gap-5 p-4 rounded-2xl hover:bg-amber-900/30 border border-transparent hover:border-amber-500/50 transition-all cursor-pointer group"
@@ -305,15 +328,11 @@ export default function App() {
             onClick={() => setSelectedImg(null)}
             class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-0"
           >
-            {/* Container utama tanpa padding biar foto pol gedenya */}
             <div class="img-container relative w-screen h-screen flex flex-col items-center justify-center p-2">
               <img
                 src={selectedImg().url}
-                /* Aksen shadow diganti jadi amber (emas) */
                 class="w-auto h-full max-h-[92vh] object-contain rounded-lg shadow-[0_0_100px_rgba(251,191,36,0.3)] border border-white/10"
               />
-
-              {/* Teks category diganti jadi text-amber-400 (emas) */}
               <div class="mt-2 text-center bg-black/50 backdrop-blur-md p-3 px-8 rounded-full border border-white/10 shadow-2xl">
                 <h3 class="text-2xl md:text-4xl font-black tracking-tighter uppercase leading-none text-white">
                   {selectedImg().name}
