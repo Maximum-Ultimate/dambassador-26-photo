@@ -91,6 +91,12 @@ export default function App() {
       : GALA_PHOTOS.filter((p) => p.name.toLowerCase().includes(s));
   });
 
+  const searchResults = createMemo(() => {
+    const s = search().toLowerCase().trim();
+    if (s === "") return []; // Kuncinya di sini: Kosongin kalau gak ngetik
+    return GALA_PHOTOS.filter((p) => p.name.toLowerCase().includes(s));
+  });
+
   onMount(() => {
     window.addEventListener("click", resetTimer);
     window.addEventListener("keydown", (e) => {
@@ -266,7 +272,8 @@ export default function App() {
               </div>
               <div class="p-6 max-h-[50vh] overflow-y-auto custom-scrollbar">
                 <div class="grid grid-cols-1 gap-3">
-                  <For each={filteredPhotos().slice(0, 8)}>
+                  {/* Pake For each dari searchResults */}
+                  <For each={searchResults()}>
                     {(p) => (
                       <div
                         onClick={() => {
@@ -290,6 +297,13 @@ export default function App() {
                       </div>
                     )}
                   </For>
+
+                  {/* Optional: Pesan kalau lagi gak ngetik apa-apa */}
+                  <Show when={search().trim() === ""}>
+                    <div class="py-10 text-center text-zinc-600 italic uppercase tracking-widest text-sm">
+                      Mulai ketik nama untuk mencari...
+                    </div>
+                  </Show>
                 </div>
               </div>
             </div>
